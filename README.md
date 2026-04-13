@@ -69,7 +69,7 @@ Simplesmente execute sem argumentos:
 ```
 
 O programa perguntará:
-1. Domínio (ex: `mail.viawork.com.br`)
+1. Domínio (ex: `dominio.com.br`)
 2. Email para o certificado
 3. Ação (1 = novo certificado, 2 = renovar)
 
@@ -78,26 +78,26 @@ O programa perguntará:
 #### Obter novo certificado
 
 ```bash
-./conect-cert -domain mail.viawork.com.br -email seu@email.com -action 1
+./conect-cert -domain dominio.com.br -email seu@email.com -action 1
 ```
 
 #### Renovar certificado existente
 
 ```bash
-./conect-cert -domain mail.viawork.com.br -email seu@email.com -action 2
+./conect-cert -domain dominio.com.br -email seu@email.com -action 2
 ```
 
 #### Com diretório de saída customizado
 
 ```bash
-./conect-cert -domain mail.viawork.com.br -email seu@email.com -action 1 -output /caminho/destino
+./conect-cert -domain dominio.com.br -email seu@email.com -action 1 -output /caminho/destino
 ```
 
 ### Flags Disponíveis
 
 | Flag | Abreviada | Descrição | Padrão |
 |------|-----------|-----------|--------|
-| `-domain` | `-d` | Domínio do certificado (ex: mail.viawork.com.br) | - |
+| `-domain` | `-d` | Domínio do certificado (ex: dominio.com.br) | - |
 | `-email` | `-e` | Email para registro no Let's Encrypt | - |
 | `-action` | `-a` | 1=novo certificado, 2=renovar | 1 |
 | `-output` | `-o` | Diretório de saída para certificados e desafios | `ftp_upload` |
@@ -118,20 +118,20 @@ projeto/
 │   │           └── keys/
 │   │               └── private.key        # Chave privada da conta ACME
 │   └── certificates/
-│       ├── mail.viawork.com.br.crt       # Certificado
-│       ├── mail.viawork.com.br.key       # Chave privada do domínio
-│       ├── mail.viawork.com.br.issuer.crt # Certificado da CA
-│       └── mail.viawork.com.br.json      # Metadados
+│       ├── dominio.com.br.crt       # Certificado
+│       ├── dominio.com.br.key       # Chave privada do domínio
+│       ├── dominio.com.br.issuer.crt # Certificado da CA
+│       └── dominio.com.br.json      # Metadados
 │
 ├── lego_challenge/
 │   └── .well-known/
 │       └── acme-challenge/               # Desafios ACME (tokens)
 │
 └── ftp_upload/                           # Diretório de saída (customizável)
-    ├── mail.viawork.com.br.crt
-    ├── mail.viawork.com.br.key
-    ├── mail.viawork.com.br.issuer.crt
-    ├── mail.viawork.com.br.json
+    ├── dominio.com.br.crt
+    ├── dominio.com.br.key
+    ├── dominio.com.br.issuer.crt
+    ├── dominio.com.br.json
     └── acme-challenge/                   # Desafios copiados automaticamente
         └── (tokens de validação)
 ```
@@ -149,7 +149,7 @@ projeto/
 
 2. **Você deve servir este diretório via HTTP**:
    ```
-   http://mail.viawork.com.br/.well-known/acme-challenge/
+   http://dominio.com.br/.well-known/acme-challenge/
    ```
 
 3. **Let's Encrypt acessa e valida** os tokens pelo caminho acima
@@ -163,7 +163,7 @@ Se usar Nginx como proxy reverso:
 ```nginx
 server {
     listen 80;
-    server_name mail.viawork.com.br;
+    server_name dominio.com.br;
 
     location /.well-known/acme-challenge/ {
         alias /caminho/do/projeto/lego_challenge/.well-known/acme-challenge/;
@@ -190,19 +190,19 @@ Alias "/.well-known/acme-challenge/" "/caminho/do/projeto/lego_challenge/.well-k
 
 ## 📋 Exemplos Práticos
 
-### Exemplo 1: Novo certificado para mail.viawork.com.br
+### Exemplo 1: Novo certificado para dominio.com.br
 
 ```bash
 ./conect-cert \
-  -domain mail.viawork.com.br \
-  -email admin@viawork.com \
+  -domain dominio.com.br \
+  -email admin@dominio.com.br \
   -action 1 \
   -output /var/www/certs
 ```
 
 **Resultado:**
-- Certificado salvo em `/var/www/certs/mail.viawork.com.br.crt`
-- Chave privada em `/var/www/certs/mail.viawork.com.br.key`
+- Certificado salvo em `/var/www/certs/dominio.com.br.crt`
+- Chave privada em `/var/www/certs/dominio.com.br.key`
 - Desafios ACME em `/var/www/certs/acme-challenge/`
 
 ### Exemplo 2: Modo interativo
@@ -210,7 +210,7 @@ Alias "/.well-known/acme-challenge/" "/caminho/do/projeto/lego_challenge/.well-k
 ```bash
 ./conect-cert
 # Responder às perguntas:
-# Digite o dominio: mail.viawork.com.br
+# Digite o dominio: dominio.com.br
 # Digite o email: seu@email.com
 # Opcao (1 ou 2): 1
 ```
@@ -219,7 +219,7 @@ Alias "/.well-known/acme-challenge/" "/caminho/do/projeto/lego_challenge/.well-k
 
 ```bash
 # /etc/cron.d/cert-renewal
-0 2 * * * cd /home/usuario/conect-cert && ./conect-cert -domain mail.viawork.com.br -email seu@email.com -action 2 -output /var/www/certs 2>&1 | logger
+0 2 * * * cd /home/usuario/conect-cert && ./conect-cert -domain dominio.com.br -email seu@email.com -action 2 -output /var/www/certs 2>&1 | logger
 ```
 
 ---
@@ -244,7 +244,7 @@ chmod 755 lego_challenge/.well-known/acme-challenge/
 **Verificar:**
 ```bash
 # De outra máquina ou fora do servidor:
-curl -I http://mail.viawork.com.br/.well-known/acme-challenge/
+curl -I http://dominio.com.br/.well-known/acme-challenge/
 
 # Deve retornar 404 ou conteúdo do token, não 403/500
 ```
@@ -253,7 +253,7 @@ curl -I http://mail.viawork.com.br/.well-known/acme-challenge/
 
 Se receber erro ao renovar, verifique se os caminhos estão corretos:
 ```bash
-ls -la certs/certificates/mail.viawork.com.br.*
+ls -la certs/certificates/dominio.com.br.*
 ```
 
 ### "Diretório de saída não encontrado"
